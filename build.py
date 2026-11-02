@@ -6,9 +6,6 @@ django.setup()
 
 from django.core.management import call_command
 
-print("Collecting static files...")
-call_command("collectstatic", interactive=False)
-
 print("Running migrations...")
 call_command("migrate", interactive=False)
 
@@ -16,6 +13,6 @@ print("Seeding sample data...")
 try:
     call_command("seed_sample_data")
 except Exception as e:
-    print(f"Seed note: {e}")
+    print(f"Sample data seed note: {e}")
 
-print("Build completed successfully.")
+print("Build script finished.")
