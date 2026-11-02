@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ property.title }} — StayBnb{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/detail.css' %}">{% endblock %}
+{% block content %}
+<div class="container detail-page">
+  <div class="detail-title">
+    <div>
+      <p class="eyebrow">{{ property.get_property_type_display }} · {{ property.location }}</p>
+      <h1>{{ property.title }}</h1>
+      {% if property.average_rating %}<p class="listing-rating">★ {{ property.average_rating|floatformat:1 }} <span>· {{ property.reviews.count }} review{{ property.reviews.count|pluralize }}</span></p>{% endif %}
+    </div>
+    <div class="detail-hosted">A place by <strong>{{ property.host.first_name|default:property.host.username }}</strong><br><span>{{ property.host.profile.bio|default:"A thoughtful host, happy to have you." }}</span></div>
+  </div>
+  <div class="gallery {% if property.images.count == 1 and not property.cover_image or property.images.count == 0 and property.cover_image %}gallery-single{% endif %}">
+    {% if property.cover_image %}<img src="{{ property.cover_image.url }}" alt="{{ property.title }} cover" class="gallery-image gallery-image-1">{% endif %}
+    {% for image in property.images.all %}<img src="{{ image.image.url }}" alt="{{ image.caption|default:property.title }}" class="gallery-image gallery-image-{% if property.cover_image %}{{ forloop.counter|add:1 }}{% else %}{{ forloop.counter }}{% endif %}">
+    {% empty %}{% if not property.cover_image %}<img src="{{ property.cover_image_url|default:'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1500&q=85' }}" alt="{{ property.title }}" class="gallery-image gallery-image-1"><img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80" alt="Interior details" class="gallery-image gallery-image-2"><img src="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=800&q=80" alt="A quiet corner" class="gallery-image gallery-image-3">{% endif %}{% endfor %}
+  </div>
+  <div class="detail-layout">
+    <article class="detail-main">
+      <div class="host-intro"><div class="avatar">{{ property.host.first_name|default:property.host.username|first|upper }}</div><div><strong>Hosted by {{ property.host.first_name|default:property.host.username }}</strong><span>Thoughtful spaces, personal touches</span></div></div>
+      <hr>
+      <h2>A little about the place</h2><p class="description">{{ property.description|linebreaksbr }}</p>
+      {% if property.amenity_list %}<h2>Small comforts</h2><div class="amenity-list">{% for amenity in property.amenity_list %}<span>✳ {{ amenity }}</span>{% endfor %}</div>{% endif %}
+      <section class="reviews-section" aria-labelledby="reviews-heading">
+        <h2 id="reviews-heading">Guest reviews <span class="review-count">({{ property.reviews.count }})</span></h2>
+        {% for review in property.reviews.all %}<article class="review"><div class="review-meta"><strong>{{ review.guest.first_name|default:review.guest.username }}</strong><span>★ {{ review.rating }} · {{ review.created_at|date:"M Y" }}</span></div><p>{{ review.comment|linebreaksbr }}</p></article>
+        {% empty %}<p class="muted">No reviews yet. A first stay, a first story.</p>{% endfor %}
+
+        <div class="inline-review" id="write-review">
+          {% if can_review %}
+            <h3>How was your stay?</h3>
+            <p class="muted">Your review helps the next guest know what to expect.</p>
+            <form method="post" action="{{ property.get_absolute_url }}" class="inline-review-form">
+              {% csrf_token %}<input type="hidden" name="action" value="review">
+              {% for field in review_form %}
+                <div class="field-block"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% for error in field.errors %}<div class="field-error">{{ error }}</div>{% endfor %}</div>
+              {% endfor %}
+              <button class="btn btn-dark rounded-pill px-4 py-2" type="submit">Share your review ↗</button>
+            </form>
+          {% elif has_reviewed %}
+            <p class="muted">Thanks for sharing your review.</p>
+          {% elif user.is_authenticated %}
+            <p class="muted">Reviews open after a completed, confirmed stay here.</p>
+          {% else %}
+            <p class="muted"><a href="{% url 'users:login' %}?next={{ property.get_absolute_url|urlencode }}%23write-review">Log in</a> after your stay to leave a review.</p>
+          {% endif %}
+        </div>
+      </section>
+    </article>
+    <aside class="booking-card" id="reserve">
+      <div class="booking-price"><strong>${{ property.price_per_night|floatformat:2 }}</strong> <span>/ night</span></div>
+      <p>Pick your dates on the calendar. We’ll take it from there.</p>
+      <div class="calendar-shell" data-availability-calendar data-today="{{ today }}">
+        <div class="calendar-heading"><button class="calendar-nav" type="button" data-calendar-prev aria-label="Previous month">‹</button><h3 data-calendar-month aria-live="polite"></h3><button class="calendar-nav" type="button" data-calendar-next aria-label="Next month">›</button></div>
+        <div class="calendar-weekdays" aria-hidden="true"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>
+        <div class="calendar-days" data-calendar-days role="group" aria-label="Select check-in and check-out dates"></div>
+        <div class="calendar-legend"><span><i class="legend-open"></i>Available</span><span><i class="legend-busy"></i>Booked</span><span><i class="legend-past"></i>Past</span></div>
+        <p class="calendar-help" data-calendar-help>Select a check-in date.</p>
+      </div>
+      {% if user.is_authenticated and user != property.host %}
+        <form method="post" action="{{ property.get_absolute_url }}" class="inline-booking-form" data-booking-form data-price="{{ property.price_per_night }}">
+          {% csrf_token %}<input type="hidden" name="action" value="book">
+          {{ booking_form.check_in.as_hidden }}{{ booking_form.check_out.as_hidden }}
+          {% for field in booking_form %}{% if field.name == "check_in" or field.name == "check_out" %}{% for error in field.errors %}<div class="field-error">{{ error }}</div>{% endfor %}{% endif %}{% endfor %}
+          {% if booking_form.non_field_errors %}<div class="field-error mb-2">{{ booking_form.non_field_errors }}</div>{% endif %}
+          <div class="selected-dates"><div><span>CHECK-IN</span><strong data-checkin-label>Choose a date</strong></div><div><span>CHECK-OUT</span><strong data-checkout-label>Choose a date</strong></div></div>
+          <div class="field-block guest-count-field"><label for="{{ booking_form.guests.id_for_label }}">Guests</label>{{ booking_form.guests }}{% for error in booking_form.guests.errors %}<div class="field-error">{{ error }}</div>{% endfor %}</div>
+          <p class="stay-estimate" data-stay-estimate>Choose dates to see your stay total.</p>
+          <button class="btn btn-dark w-100 rounded-pill py-3" type="submit" data-booking-submit disabled>Request to book ↗</button>
+          <small>You won’t be charged yet.</small>
+        </form>
+      {% elif user == property.host %}
+        <p class="calendar-help">This is your place. Guests can choose open dates here.</p>
+      {% else %}
+        <p class="calendar-help">Log in to choose dates and request a stay.</p>
+        <a class="btn btn-dark w-100 rounded-pill py-3" href="{% url 'users:login' %}?next={{ property.get_absolute_url|urlencode }}">Log in to book ↗</a>
+        <small>You won’t be charged yet.</small>
+      {% endif %}
+      {% if user == property.host %}<div class="owner-actions"><a href="{% url 'properties:edit' property.pk %}">Edit this place</a><a href="{% url 'properties:delete' property.pk %}">Remove listing</a></div>{% endif %}
+    </aside>
+  </div>
+</div>
+{{ availability|json_script:"property-availability" }}
+{% endblock %}

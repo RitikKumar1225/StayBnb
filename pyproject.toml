@@ -1,0 +1,5 @@
+[tool.vercel]
+entrypoint = "staybnb.wsgi:application"
+
+[tool.vercel.scripts]
+build = "python build.py"

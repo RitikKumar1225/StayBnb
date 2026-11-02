@@ -1,0 +1,2 @@
+{% extends "base.html" %}
+{% block content %}<div class="container narrow-page form-page"><p class="eyebrow">A LAST LOOK</p><h1>Remove this place?</h1><p class="form-intro">“{{ property.title }}” will be removed, along with any bookings and reviews connected to it.</p><form method="post" class="surface-form">{% csrf_token %}<a class="btn btn-outline-dark rounded-pill px-4 py-3 me-2" href="{{ property.get_absolute_url }}">Keep it</a><button class="btn btn-danger rounded-pill px-4 py-3" type="submit">Remove listing</button></form></div>{% endblock %}

@@ -1,0 +1,21 @@
+<article class="stay-card" data-place-card>
+  <a class="stay-image" href="{{ property.get_absolute_url }}">
+    {% with cover=property.images.all|first %}
+      {% if property.cover_image %}<img src="{{ property.cover_image.url }}" alt="{{ property.title }}" loading="lazy">
+      {% elif cover %}<img src="{{ cover.image.url }}" alt="{{ property.title }}" loading="lazy">
+      {% elif property.cover_image_url %}<img src="{{ property.cover_image_url }}" alt="{{ property.title }}" loading="lazy">
+      {% else %}
+        {% if property.property_type == "cabin" %}<img src="https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?auto=format&fit=crop&w=900&q=82" alt="{{ property.title }}" loading="lazy">
+        {% elif property.property_type == "apartment" %}<img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=900&q=82" alt="{{ property.title }}" loading="lazy">
+        {% elif property.property_type == "villa" %}<img src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=900&q=82" alt="{{ property.title }}" loading="lazy">
+        {% else %}<img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=900&q=82" alt="{{ property.title }}" loading="lazy">{% endif %}
+      {% endif %}
+    {% endwith %}
+    <span class="image-tag">{{ property.get_property_type_display }}</span><span class="image-arrow">↗</span>
+  </a>
+  <div class="stay-info">
+    <div class="stay-heading"><a href="{{ property.get_absolute_url }}"><h3>{{ property.title }}</h3></a>{% if property.rating %}<span class="rating">★ {{ property.rating|floatformat:1 }}</span>{% endif %}</div>
+    <p class="stay-location">{{ property.location }}</p>
+    <p class="stay-price"><strong>${{ property.price_per_night|floatformat:2 }}</strong> <span>/ night</span></p>
+  </div>
+</article>

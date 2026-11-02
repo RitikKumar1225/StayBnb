@@ -1,0 +1,61 @@
+html{scroll-behavior:smooth}
+img{max-width:100%}
+.dashboard-actions{display:flex;flex-wrap:wrap;gap:10px}
+.host-listing-photo img,.booking-thumb img{width:100%;height:100%;object-fit:cover}
+.current-images{margin-top:18px}
+.stay-grid>*{min-width:0}
+.booking-card,.booking-panel,.booking-summary,.surface-form{min-width:0}
+@media(max-width:900px){
+  .detail-layout{grid-template-columns:minmax(0,1fr) minmax(260px,320px);gap:28px}
+  .booking-row{grid-template-columns:120px minmax(0,1fr) auto;gap:14px}
+  .booking-thumb img{width:120px}
+  .host-listings{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .host-booking-end{flex-wrap:wrap;justify-content:flex-end}
+}
+@media(max-width:650px){
+  .dashboard-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}
+  .dashboard-actions .btn{padding-inline:12px!important;font-size:12px}
+  .dashboard-head-inner{width:100%}
+  .dashboard-section-title{gap:10px;align-items:flex-start}
+  .dashboard-section-title>span{white-space:nowrap;padding-top:3px}
+  .booking-row{grid-template-columns:82px minmax(0,1fr);align-items:start;gap:12px}
+  .booking-thumb img{width:82px;height:82px}
+  .booking-row-main{min-width:0}
+  .booking-row-main h3{overflow-wrap:anywhere}
+  .booking-row-end{grid-column:2;flex-direction:row;flex-wrap:wrap;align-items:center}
+  .host-listings{grid-template-columns:1fr}
+  .host-listing{grid-template-columns:minmax(90px,34%) minmax(0,1fr)}
+  .host-listing-photo{min-height:148px}
+  .host-listing-photo img{min-height:148px}
+  .host-listing>div{min-width:0}
+  .host-listing h3{overflow-wrap:anywhere}
+  .host-listing-actions{flex-wrap:wrap}
+  .host-booking{align-items:flex-start;gap:12px}
+  .host-booking>div:first-child{min-width:0}
+  .host-booking-end{min-width:78px;align-items:flex-end;gap:8px}
+  .detail-layout{grid-template-columns:minmax(0,1fr)}
+  .booking-card{width:100%;position:static;order:-1}
+  .booking-form-layout{grid-template-columns:minmax(0,1fr)}
+  .auth-wrap{grid-template-columns:minmax(0,1fr)}
+  .auth-form{min-width:0}
+  .search-panel{width:100%}
+  .gallery{width:100%}
+  .surface-form{padding:20px}
+  .field-block input,.field-block select,.field-block textarea{max-width:100%}
+}
+@media(max-width:380px){
+  .dashboard-head h1{font-size:2.35rem}
+  .dashboard-actions{grid-template-columns:1fr}
+  .dashboard-actions .btn{width:100%}
+  .calendar-shell{padding-inline:8px}
+  .calendar-days{gap:1px}
+  .calendar-day{font-size:10px}
+  .calendar-legend{gap:8px}
+  .calendar-legend span{font-size:8px}
+  .host-listing{grid-template-columns:85px minmax(0,1fr)}
+  .host-listing-photo,.host-listing-photo img{min-height:140px}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Find your next stay — StayBnb{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="container hero-content">
+    <p class="eyebrow"><span class="eyebrow-line"></span> A different kind of getaway</p>
+    <h1>Somewhere new.<br><em>Somehow yours.</em></h1>
+    <p class="hero-copy">Thoughtful places for slow mornings, long walks, and stories worth keeping.</p>
+    <form class="search-panel" method="get" action="{% url 'properties:home' %}">
+      <label class="search-field"><span>WHERE TO?</span><input name="location" placeholder="Try a city, coast or quiet corner" value="{{ filters.location }}">{% for error in search_form.location.errors %}<small class="search-error">{{ error }}</small>{% endfor %}</label>
+      <label class="search-field search-type"><span>THE FEEL</span><select name="type"><option value="">Any kind of stay</option>{% for value,label in types %}<option value="{{ value }}" {% if filters.type == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>{% for error in search_form.type.errors %}<small class="search-error">{{ error }}</small>{% endfor %}</label>
+      <label class="search-field search-price"><span>PRICE / NIGHT (USD)</span><div class="price-inputs"><input name="min_price" type="number" min="0" placeholder="Min $" value="{{ filters.min_price }}"><input name="max_price" type="number" min="0" placeholder="Max $" value="{{ filters.max_price }}"></div>{% for error in search_form.min_price.errors %}<small class="search-error">{{ error }}</small>{% endfor %}{% for error in search_form.max_price.errors %}<small class="search-error">{{ error }}</small>{% endfor %}</label>
+      <button class="search-submit" aria-label="Search stays" type="submit">⌕</button>
+    </form>
+    <div class="hero-note"><span>✳</span> The best trips leave room to wander.</div>
+  </div>
+  <div class="hero-decoration" aria-hidden="true"><span>STAY AWHILE</span><i>✳</i></div>
+</section>
+<section class="container stays-section">
+  <div class="section-heading"><div><p class="eyebrow">THE STAYBNB EDIT</p><h2>Good places, <em>good energy.</em></h2></div><span class="results-count">{{ listings|length }} places to begin</span></div>
+  {% if listings %}<div class="stay-grid" data-place-grid>{% for property in listings %}{% include "components/property_card.html" %}{% endfor %}</div><button class="btn btn-outline-dark rounded-pill px-4 py-2 mt-4" type="button" data-show-places hidden>Show more places</button>
+  {% else %}<div class="empty-state"><span>✳</span><h3>No places found just yet.</h3><p>Try a broader search, or be the first to host somewhere lovely.</p><a href="{% url 'properties:home' %}" class="text-link">Clear your filters ↗</a></div>{% endif %}
+</section>
+<section class="host-banner"><div class="container host-banner-inner"><div><p class="eyebrow">HAVE A PLACE WITH A POINT OF VIEW?</p><h2>Let someone else<br>fall for it.</h2></div><p>Share your space with people who travel for the feeling, not just the photograph. Your StayBnb account works for booking and hosting.</p><a href="{% if user.is_authenticated %}{% url 'properties:create' %}{% else %}{% url 'users:signup' %}{% endif %}" class="btn btn-light rounded-pill px-4">List your place <span>↗</span></a></div></section>
+{% endblock %}
